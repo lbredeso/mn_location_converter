@@ -7,6 +7,7 @@ gem 'rails', '3.1.0'
 
 gem 'pg'
 gem 'activerecord-import'
+gem 'nokogiri'
 
 # Gems used only for assets and not required
 # in production environments by default.
