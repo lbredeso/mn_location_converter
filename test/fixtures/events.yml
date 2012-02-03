@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/Fixtures.html
+
+one:
+  accn: MyString
+  road_id: MyString
+  distance: 1.5
+
+two:
+  accn: MyString
+  road_id: MyString
+  distance: 1.5
