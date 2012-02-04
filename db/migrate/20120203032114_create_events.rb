@@ -4,8 +4,6 @@ class CreateEvents < ActiveRecord::Migration
       t.string :accn
       t.string :road_id
       t.float :distance
-
-      t.timestamps
     end
   end
 end

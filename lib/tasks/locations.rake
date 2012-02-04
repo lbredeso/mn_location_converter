@@ -3,11 +3,11 @@ require 'nokogiri'
 require 'open-uri'
 
 desc "Load location events"
-task :load_events, [:year] => :environment do |t, args|
-  year = args.year
+task :load_events, [:file] => :environment do |t, args|
+  file = args.file
   events = []
-  puts "Loading location events for #{year}"
-  CSV.foreach("lib/data/location/mn-#{year}-loc.csv") do |row|
+  puts "Loading location events from #{file}"
+  CSV.foreach("lib/data/location/#{file}") do |row|
     events << Event.new(:unique_id => row[0], :road_id => row[1], :distance => row[2].to_f)
     if events.size % 1000 == 0
       Event.import events
