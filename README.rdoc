@@ -8,7 +8,7 @@ Initially, the source data will be derived from DPS crash data, but ultimately, 
 that uses these Minnesota shapefiles as location references could be used.
 
 == Getting Started
-1.  Create your databases
+1. Create your databases
 
     sudo su postgres
     psql template1
@@ -18,8 +18,8 @@ that uses these Minnesota shapefiles as location references could be used.
     create database mn_location_converter_test owner mn_location_converter;
     create database mn_location_converter_production owner mn_location_converter;
     
-2.  Run the migrations
+2. Run the migrations
 
     rake db:migrate
     
-3.  
+3. 
