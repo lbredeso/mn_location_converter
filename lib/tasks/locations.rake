@@ -50,8 +50,6 @@ task :generate_roads do
     unless ['.', '..'].include? zipfile
       base = File.basename zipfile, '.zip'
       FileUtils.mkdir_p "/tmp/#{base}"
-      # `rm /tmp/#{base}.*`
-      # `rm /tmp/road_metadata.htm`
       `unzip -d /tmp/#{base} #{File.join(SHAPEFILES, zipfile)}`
       puts "Generating roads SQL for #{base} county"
       `shp2pgsql -a -s 200000 -W UTF-8 /tmp/#{base}/*.shp roads > #{ROADS}/#{base}.sql`
