@@ -2,6 +2,9 @@ require 'csv'
 require 'nokogiri'
 require 'open-uri'
 
+SHAPEFILES = "lib/data/shapefiles"
+ROADS = "lib/data/roads"
+
 desc "Load location events"
 task :load_events, [:file] => :environment do |t, args|
   file = args.file
@@ -19,8 +22,7 @@ end
 
 desc "Download shapefiles from Minnesota Department of Transportation"
 task :download_shapefiles do
-  shapefiles = "lib/data/shapefiles"
-  FileUtils.mkdir_p shapefiles
+  FileUtils.mkdir_p SHAPEFILES
   base_url = 'http://www.dot.state.mn.us/maps/gisbase'
   county_list = Nokogiri::HTML(open("#{base_url}/html/county_text.html"))
   county_list.xpath('//html/body/table[5]/tr[2]/td[2]/table/tr/td/a').each do |county_link|
@@ -36,6 +38,24 @@ task :download_shapefiles do
         puts "Downloading #{county_zip}"
         f.write(open("#{base_url}/datafiles/county/#{county_zip}").read)
       end
+    end
+  end
+end
+
+desc "Generate roads SQL from downloaded Shapefiles"
+task :generate_roads do
+  FileUtils.mkdir_p SHAPEFILES
+  FileUtils.mkdir_p ROADS
+  Dir.foreach(SHAPEFILES) do |zipfile|
+    unless ['.', '..'].include? zipfile
+      base = File.basename zipfile, '.zip'
+      FileUtils.mkdir_p "/tmp/#{base}"
+      # `rm /tmp/#{base}.*`
+      # `rm /tmp/road_metadata.htm`
+      `unzip -d /tmp/#{base} #{File.join(SHAPEFILES, zipfile)}`
+      puts "Generating roads SQL for #{base} county"
+      `shp2pgsql -a -s 200000 -W UTF-8 /tmp/#{base}/*.shp roads > #{ROADS}/#{base}.sql`
+      `rm -rf /tmp/#{base}`
     end
   end
 end

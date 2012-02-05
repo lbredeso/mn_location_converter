@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120204024026) do
+ActiveRecord::Schema.define(:version => 20120204042740) do
 
   create_table "events", :force => true do |t|
     t.string "unique_id"
@@ -21,31 +21,25 @@ ActiveRecord::Schema.define(:version => 20120204024026) do
 
   add_index "events", ["unique_id"], :name => "index_events_on_accn", :unique => true
 
-  create_table "roads", :primary_key => "gid", :force => true do |t|
-    t.string  "str_name",   :limit => 42
-    t.string  "str_pfx",    :limit => 2
-    t.string  "base_nam",   :limit => 50
-    t.string  "str_type",   :limit => 4
-    t.string  "str_sfx",    :limit => 2
-    t.string  "e_911",      :limit => 1
-    t.string  "tis_code",   :limit => 11
-    t.string  "rte_syst",   :limit => 2
-    t.string  "rte_num",    :limit => 5
-    t.string  "divid",      :limit => 1
-    t.string  "traf_dir",   :limit => 1
-    t.string  "tis_one",    :limit => 16
-    t.string  "status",     :limit => 1
-    t.date    "date_pro"
-    t.date    "date_act"
-    t.date    "date_ret"
-    t.date    "date_edt"
-    t.decimal "shape_leng"
-    t.float   "begm"
-    t.float   "endm"
-    t.string  "cnty_code",  :limit => 254
-    t.string  "directiona", :limit => 254
+  create_table "geometry_columns", :id => false, :force => true do |t|
+    t.string  "f_table_catalog",   :limit => 256, :null => false
+    t.string  "f_table_schema",    :limit => 256, :null => false
+    t.string  "f_table_name",      :limit => 256, :null => false
+    t.string  "f_geometry_column", :limit => 256, :null => false
+    t.integer "coord_dimension",                  :null => false
+    t.integer "srid",                             :null => false
+    t.string  "type",              :limit => 30,  :null => false
   end
 
-  add_index "roads", ["tis_code"], :name => "index_roads_on_tis_code"
+# Could not dump table "roads" because of following StandardError
+#   Unknown type 'geometry' for column 'the_geom'
+
+  create_table "spatial_ref_sys", :id => false, :force => true do |t|
+    t.integer "srid",                      :null => false
+    t.string  "auth_name", :limit => 256
+    t.integer "auth_srid"
+    t.string  "srtext",    :limit => 2048
+    t.string  "proj4text", :limit => 2048
+  end
 
 end
