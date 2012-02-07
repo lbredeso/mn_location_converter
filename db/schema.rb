@@ -11,12 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120204042740) do
+ActiveRecord::Schema.define(:version => 20120206012400) do
 
   create_table "events", :force => true do |t|
     t.string "unique_id"
     t.string "road_id"
     t.float  "distance"
+    t.float  "latitude"
+    t.float  "longitude"
   end
 
   add_index "events", ["unique_id"], :name => "index_events_on_accn", :unique => true
