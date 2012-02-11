@@ -50,6 +50,8 @@ that uses these Minnesota shapefiles as location references could be used.
     # cd to root of this repository
     for f in lib/data/roads/*.sql ; do psql -d mn_location_converter_development -f $f ; done
     
-8. Generate latitude and longitude file
+8. Calculate and save latitude and longitude values
+
+    rake calculate_lat_lon
     
     

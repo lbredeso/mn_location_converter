@@ -55,6 +55,21 @@ task :generate_roads do
   end
 end
 
+desc "Calculate and save latitude and longitude values for each event"
+task :calculate_lat_lon do
+  # First pass
+  Event.find_lat_lon(50)
+  # Save...
+  
+  # Second pass
+  Event.find_lat_lon_begin(50)
+  # Save...
+  
+  # Third pass
+  Event.find_lat_lon_end(50)
+  # Save...
+end
+
 private
 
 def download url, file

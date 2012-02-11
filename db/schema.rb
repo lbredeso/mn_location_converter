@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120206012400) do
+ActiveRecord::Schema.define(:version => 20120211043601) do
 
   create_table "events", :force => true do |t|
     t.string "unique_id"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(:version => 20120206012400) do
     t.float  "longitude"
   end
 
+  add_index "events", ["road_id", "distance"], :name => "index_events_on_road_id_and_distance"
   add_index "events", ["unique_id"], :name => "index_events_on_accn", :unique => true
 
   create_table "geometry_columns", :id => false, :force => true do |t|
