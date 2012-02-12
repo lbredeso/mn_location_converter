@@ -1,23 +1,23 @@
 class Event < ActiveRecord::Base
-  def self.find_lat_lon max
-    self.find_by_sql base_query("events.distance > roads.begm and events.distance < roads.endm", max)
+  def self.find_lat_lon limit, offset
+    self.find_by_sql base_query("events.distance > roads.begm and events.distance < roads.endm", limit, offset)
   end
   
-  def self.find_lat_lon_begin max
-    self.find_by_sql base_query("events.distance = roads.begm and events.latitude is null", max)
+  def self.find_lat_lon_begin limit, offset
+    self.find_by_sql base_query("events.distance = roads.begm and events.latitude is null", limit, offset)
   end
   
-  def self.find_lat_lon_end max
-    self.find_by_sql base_query("events.distance = roads.endm and events.latitude is null", max)
+  def self.find_lat_lon_end limit, offset
+    self.find_by_sql base_query("events.distance = roads.endm and events.latitude is null", limit, offset)
   end
   
   private
-  def self.base_query condition, max
+  def self.base_query condition, limit, offset
     <<-SQL
       select st_x(point) as longitude, st_y(point) as latitude, id, unique_id, road_id, distance from 
         (
           select st_line_interpolate_point(
-            st_transform(LineMerge(roads.the_geom), 4326), 
+            st_transform(geometryn(roads.the_geom, 1), 4326), 
             (events.distance - roads.begm) / (roads.endm - roads.begm)
           ) as point, events.id, events.unique_id, events.road_id, events.distance
           from events
@@ -28,7 +28,7 @@ class Event < ActiveRecord::Base
             roads.traf_dir in ('B', 'I')
           order by
             events.id
-        ) as event limit #{max}
+        ) as event limit #{limit} offset #{offset}
     SQL
   end
 end

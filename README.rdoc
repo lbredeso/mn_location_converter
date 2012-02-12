@@ -36,21 +36,25 @@ that uses these Minnesota shapefiles as location references could be used.
 
     rake db:migrate
     
-5. Download the shapefiles
+5. Import the events, where [file] is relative to lib/data/location.  Some samples are included in the Downloads area, for crashes as listed in DPS data.
+
+    rake load_events[file]
+    
+6. Download the shapefiles
 
     rake download_shapefiles
     
-6. Generate the roads files
+7. Generate the roads files
 
     rake generate_roads
     
-7. Import the roads files
+8. Import the roads files
 
     sudo su - postgres
     # cd to root of this repository
     for f in lib/data/roads/*.sql ; do psql -d mn_location_converter_development -f $f ; done
     
-8. Calculate and save latitude and longitude values
+9. Calculate and save latitude and longitude values
 
     rake calculate_lat_lon
     
