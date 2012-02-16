@@ -3,6 +3,7 @@ require 'nokogiri'
 require 'open-uri'
 
 BASE_URL = 'http://www.dot.state.mn.us/maps/gisbase'
+BATCH_SIZE = 1000
 ROADS = "lib/data/roads"
 SHAPEFILES = "lib/data/shapefiles"
 
@@ -13,7 +14,7 @@ task :load_events, [:file] => :environment do |t, args|
   puts "Loading location events from #{file}"
   CSV.foreach("lib/data/location/#{file}") do |row|
     events << Event.new(:unique_id => row[0], :road_id => row[1], :distance => row[2].to_f)
-    if events.size % 1000 == 0
+    if events.size % BATCH_SIZE == 0
       Event.import events
       events = []
     end
@@ -56,18 +57,10 @@ task :generate_roads do
 end
 
 desc "Calculate and save latitude and longitude values for each event"
-task :calculate_lat_lon do
-  # First pass
-  Event.find_lat_lon(50)
-  # Save...
-  
-  # Second pass
-  Event.find_lat_lon_begin(50)
-  # Save...
-  
-  # Third pass
-  Event.find_lat_lon_end(50)
-  # Save...
+task :calculate_lat_lon => :environment do
+  calculate :find_lat_lon
+  calculate :find_lat_lon_begin
+  calculate :find_lat_lon_end
 end
 
 private
@@ -78,5 +71,21 @@ def download url, file
       puts "Downloading #{file}"
       f.write(open("#{BASE_URL}/#{url}/#{file}").read)
     end
+  end
+end
+
+def calculate message 
+  offset = 0
+  puts "Trying #{message}"
+  locations = Event.send message, BATCH_SIZE, 0
+  until locations.size == 0
+    puts "Updating #{locations.size} events, starting at #{offset} with id: #{locations[0].id}"
+    locations.each do |location|
+      event = Event.find location.id
+      event.update_attributes :longitude => location.longitude, :latitude => location.latitude
+    end
+    
+    offset += locations.size
+    locations = Event.send message, BATCH_SIZE, offset
   end
 end
