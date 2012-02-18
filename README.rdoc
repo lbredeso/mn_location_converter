@@ -36,7 +36,7 @@ that uses these Minnesota shapefiles as location references could be used.
 
     rake db:migrate
     
-5. Import the events, where [file] is relative to lib/data/location.  Some samples are included in the Downloads area, for crashes as listed in DPS data.
+5. Import the events, where [file] is relative to lib/data/location.  Some samples are included here:  https://github.com/lbredeso/mn_location_converter/downloads, for crashes as defined in DPS data.
 
     rake events:import[file]
     
