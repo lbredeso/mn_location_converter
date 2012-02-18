@@ -7,19 +7,38 @@ BATCH_SIZE = 1000
 ROADS = "lib/data/roads"
 SHAPEFILES = "lib/data/shapefiles"
 
-desc "Load location events"
-task :load_events, [:file] => :environment do |t, args|
-  file = args.file
-  events = []
-  puts "Loading location events from #{file}"
-  CSV.foreach("lib/data/location/#{file}") do |row|
-    events << Event.new(:unique_id => row[0], :road_id => row[1], :distance => row[2].to_f)
-    if events.size % BATCH_SIZE == 0
-      Event.import events
-      events = []
+namespace :events do
+  desc "Import events to be located"
+  task :import, [:file] => :environment do |t, args|
+    file = args.file
+    events = []
+    puts "Importing events to be located from #{file}"
+    CSV.foreach("lib/data/location/#{file}") do |row|
+      events << Event.new(:unique_id => row[0], :road_id => row[1], :distance => row[2].to_f)
+      if events.size % BATCH_SIZE == 0
+        Event.import events
+        events = []
+      end
+    end
+    Event.import events
+  end
+  
+  desc "Export all located events back into a new file"
+  task :export, [:file] => :environment do |t, args|
+    file = args.file
+    events = Event.located.order("events.unique_id").page(1).per(BATCH_SIZE)
+    page = 1
+    puts "Exporting located events to #{file}"
+    CSV.open("#{file}", "wb") do |csv|
+      until events.size == 0
+        events.each do |event|
+          csv << [event.unique_id, event.longitude, event.latitude]
+        end
+        page += 1
+        events = Event.located.order("events.unique_id").page(page).per(BATCH_SIZE)
+      end
     end
   end
-  Event.import events
 end
 
 desc "Download shapefiles from Minnesota Department of Transportation"

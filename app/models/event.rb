@@ -1,4 +1,8 @@
 class Event < ActiveRecord::Base
+  scope :located, lambda {
+    where('events.latitude is not null and events.longitude is not null')
+  }
+  
   def self.find_lat_lon limit, offset
     self.find_by_sql base_query("events.distance > roads.begm and events.distance < roads.endm", limit, offset)
   end

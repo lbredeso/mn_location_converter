@@ -38,7 +38,7 @@ that uses these Minnesota shapefiles as location references could be used.
     
 5. Import the events, where [file] is relative to lib/data/location.  Some samples are included in the Downloads area, for crashes as listed in DPS data.
 
-    rake load_events[file]
+    rake events:import[file]
     
 6. Download the shapefiles
 
@@ -58,4 +58,8 @@ that uses these Minnesota shapefiles as location references could be used.
 
     rake calculate_lat_lon
     
+10. Export the events to a file, where [file] is the name of the file, relative to the current directory.
+
+    rake events:export[file]
+
     
