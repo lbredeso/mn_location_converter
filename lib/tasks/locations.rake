@@ -55,8 +55,7 @@ task :download_shapefiles do
     download '/datafiles/county', "#{county}.zip"
   end
   
-  # And of course, a one-off...
-  download '/datafiles/statewide', 'StateTH.zip'
+  # download '/datafiles/statewide', 'StateTH.zip'
 end
 
 desc "Generate roads SQL from downloaded Shapefiles"
