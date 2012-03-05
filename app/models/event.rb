@@ -27,12 +27,12 @@ class Event < ActiveRecord::Base
           from events
           inner join roads on
             events.road_id = roads.tis_code and
+            roads.traf_dir in ('B', 'I') and
+            roads.shape_leng > 0.0
+          where
             events.longitude is null and
             events.latitude is null and
             #{condition}
-          where
-            roads.traf_dir in ('B', 'I') and
-            roads.shape_leng > 0.0
           order by
             events.id
         ) as event order by event.id limit #{limit} offset #{offset}
