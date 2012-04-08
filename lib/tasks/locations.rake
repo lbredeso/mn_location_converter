@@ -92,18 +92,15 @@ def download url, file
   end
 end
 
-def calculate message 
-  offset = 0
+def calculate message
   puts "Trying #{message}"
-  locations = Event.send message, BATCH_SIZE, 0
+  locations = Event.send message, BATCH_SIZE
   until locations.size == 0
-    puts "Updating #{locations.size} events, starting at #{offset} with id: #{locations[0].id}"
+    puts "Updating #{locations.size} events, starting with id: #{locations[0].id}"
     locations.each do |location|
       event = Event.find location.id
       event.update_attributes :longitude => location.longitude, :latitude => location.latitude
     end
-    
-    offset += locations.size
-    locations = Event.send message, BATCH_SIZE, offset
+    locations = Event.send message, BATCH_SIZE
   end
 end

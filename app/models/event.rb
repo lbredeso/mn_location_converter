@@ -3,20 +3,20 @@ class Event < ActiveRecord::Base
     where('events.latitude is not null and events.longitude is not null')
   }
   
-  def self.find_lat_lon limit, offset
-    self.find_by_sql base_query("events.distance > roads.begm and events.distance < roads.endm", limit, offset)
+  def self.find_lat_lon limit
+    self.find_by_sql base_query("events.distance > roads.begm and events.distance < roads.endm", limit)
   end
   
-  def self.find_lat_lon_begin limit, offset
-    self.find_by_sql base_query("events.distance = roads.begm", limit, offset)
+  def self.find_lat_lon_begin limit
+    self.find_by_sql base_query("events.distance = roads.begm", limit)
   end
   
-  def self.find_lat_lon_end limit, offset
-    self.find_by_sql base_query("events.distance = roads.endm", limit, offset)
+  def self.find_lat_lon_end limit
+    self.find_by_sql base_query("events.distance = roads.endm", limit)
   end
   
   private
-  def self.base_query condition, limit, offset
+  def self.base_query condition, limit
     <<-SQL
       select id, st_x(point) as longitude, st_y(point) as latitude from 
         (
@@ -27,6 +27,7 @@ class Event < ActiveRecord::Base
           from events
           inner join roads on
             events.road_id = roads.tis_code and
+            roads.the_geom is not null and
             roads.traf_dir in ('B', 'I') and
             roads.shape_leng > 0.0
           where
@@ -35,7 +36,7 @@ class Event < ActiveRecord::Base
             #{condition}
           order by
             events.id
-        ) as event order by event.id limit #{limit} offset #{offset}
+        ) as event order by event.id limit #{limit} offset 0
     SQL
   end
 end
