@@ -9,21 +9,16 @@ that uses these Minnesota shapefiles as location references could be used.
 
 == Database setup
 1. Install PostgreSQL (details are outside the scope of this project)
-2. Create your databases
 
-    sudo su - postgres
-    psql template1
-    
-    create role mn_location_converter with createdb login password 'mn_location_converter';
-    create database mn_location_converter_development owner mn_location_converter;
-    create database mn_location_converter_test owner mn_location_converter;
-    create database mn_location_converter_production owner mn_location_converter;
+2. Create your database user and database, setting the password to 'mn_location_converter' when prompted
+
+    createuser -SdRP mn_location_converter
+    createdb mn_location_converter_development
     
 3. Install PostGIS
 
-    sudo su - postgres
     createlang plpgsql mn_location_converter_development
-    cd /usr/share/pgsql/contrib/postgis-1.5
+    cd /usr/share/pgsql/contrib/postgis-1.5 (or cd /usr/local/Cellar/postgis/1.5.3/share/postgis if using Homebrew on OSX)
     psql -d mn_location_converter_development -f postgis.sql
     psql -d mn_location_converter_development -f spatial_ref_sys.sql
     
@@ -35,33 +30,36 @@ that uses these Minnesota shapefiles as location references could be used.
     
 == Getting latitude and longitude values for your events
     
-1. Run the migrations
+1. Create the directory for your source location files, then move the files there
+
+    mkdir -p lib/data/location
+    cp locations.txt lib/data/location
+
+2. Run the migrations
 
     rake db:migrate
     
-2. Import the events, where [file] is relative to lib/data/location.  Some samples for crashes as defined in MNDPS data are included here:  https://github.com/lbredeso/mn_location_converter/downloads
+3. Import the events, where [file] is relative to lib/data/location.  Some samples for crashes as defined in MNDPS data are included here:  https://github.com/lbredeso/mn_location_converter/downloads
 
     rake events:import[file]
     
-3. Download the shapefiles
+4. Download the shapefiles
 
     rake download_shapefiles
     
-4. Generate the roads files
+5. Generate the roads files
 
     rake generate_roads
     
-5. Import the roads files
+6. Import the roads files
 
-    sudo su - postgres
-    # cd to root of this repository
     for f in lib/data/roads/*.sql ; do psql -d mn_location_converter_development -f $f ; done
     
-6. Calculate and save latitude and longitude values (this is currently quite slow, so expect it to take a few hours)
+7. Calculate and save latitude and longitude values (this is currently quite slow, so expect it to take a few hours)
 
     rake calculate_lat_lon
     
-7. Export the events to a file, where [file] is the name of the file, relative to the current directory.
+8. Export the events to a file, where [file] is the name of the file, relative to the current directory.
 
     rake events:export[file]
 
