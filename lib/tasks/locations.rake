@@ -26,7 +26,7 @@ namespace :events do
   desc "Export all located events back into a new file"
   task :export, [:file] => :environment do |t, args|
     file = args.file
-    events = Event.located.order("events.unique_id").page(1).per(BATCH_SIZE)
+    events = Event.page(1).per(BATCH_SIZE)
     page = 1
     puts "Exporting located events to #{file}"
     CSV.open("#{file}", "wb") do |csv|
@@ -35,7 +35,7 @@ namespace :events do
           csv << [event.unique_id, event.longitude, event.latitude]
         end
         page += 1
-        events = Event.located.order("events.unique_id").page(page).per(BATCH_SIZE)
+        events = Event.page(page).per(BATCH_SIZE)
       end
     end
   end
@@ -45,7 +45,7 @@ desc "Download shapefiles from Minnesota Department of Transportation"
 task :download_shapefiles do
   FileUtils.mkdir_p SHAPEFILES
   county_list = Nokogiri::HTML(open("#{BASE_URL}/html/county_text.html"))
-  county_list.xpath('//html/body/table[5]/tr[2]/td[2]/table/tr/td/a').each do |county_link|
+  county_list.xpath('//html/body/table[5]/tr[2]/td[2]/table/tr/td/a|//html/body/table[5]/tr[2]/td[2]/table/tr/td/font/a').each do |county_link|
     county = county_link['href'].match(/([a-z]*)\.html/)[1]
     if county == "lakewoods"
       county = "lakeofthewoods"
