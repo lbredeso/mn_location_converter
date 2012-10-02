@@ -26,16 +26,10 @@ namespace :events do
   desc "Export all located events back into a new file"
   task :export, [:file] => :environment do |t, args|
     file = args.file
-    events = Event.page(1).per(BATCH_SIZE)
-    page = 1
     puts "Exporting located events to #{file}"
     CSV.open("#{file}", "wb") do |csv|
-      until events.size == 0
-        events.each do |event|
-          csv << [event.unique_id, event.longitude, event.latitude]
-        end
-        page += 1
-        events = Event.page(page).per(BATCH_SIZE)
+      Event.find_each do |event|
+        csv << [event.unique_id, event.longitude, event.latitude]
       end
     end
   end

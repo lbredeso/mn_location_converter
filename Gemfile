@@ -6,6 +6,7 @@ gem 'rails', '3.1.0'
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
 gem 'pg'
+# gem 'activerecord-jdbcpostgresql-adapter'
 gem 'activerecord-import'
 gem 'nokogiri'
 
@@ -18,7 +19,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
-gem 'kaminari'
+gem 'will_paginate'
 
 # Use unicorn as the web server
 # gem 'unicorn'
